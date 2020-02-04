@@ -15,12 +15,12 @@ from pygments import highlight, lexers, formatters
 def colorized(response, response_type):
     response_formatted = response
     
-    if "/json" in response_type:
+    if "application/json" in response_type:
         jsonified = json.loads(response)
         formatted_json = json.dumps(jsonified, sort_keys=True, indent=4)
         response_formatted = highlight(formatted_json, lexers.JsonLexer(), formatters.TerminalFormatter())
     
-    if "/html" in response_type:
+    if "text/html" in response_type:
         response_formatted = highlight(response, lexers.HtmlLexer(), formatters.TerminalFormatter())
     
     return response_formatted
@@ -28,13 +28,13 @@ def colorized(response, response_type):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--file", default="wtf.json", help="File input")
-    parser.add_argument("-c", "--colorized", default=True, help="Colored output")
+    parser.add_argument("-r", "--raw", action="store_true", default=False, help="Colored output")
     args = parser.parse_args()
     
     shit = WTF(args.file)
     response = shit.get_response()
     
-    if args.colorized:
+    if not args.raw:
         response = colorized(response, shit.get_response_type())
     
     print(response)
