@@ -11,6 +11,7 @@ import json
 
 from wtf import WTF
 from pygments import highlight, lexers, formatters
+from colored import fore, style
 
 def colorized(response, response_type):
     response_formatted = response
@@ -40,11 +41,16 @@ def main():
     request_data = shit.get_request_data()
     response_data = shit.get_response_raw()
     
-    print(f'LABEL: {request_data["label"]}')
-    print(f'URL: {request_data["url"]}')
-    print(f'METHOD: {request_data["method"]}')
-    print(f'STATUS: {response_data.status} {response_data.reason}')
-    print(f'DATA:\n{response}')
+    status_color = fore.GREEN
+
+    if response_data.status != 200:
+        status_color = fore.RED
+
+    print(f'{fore.LIGHT_GREEN}{style.BOLD}{request_data["label"]}{style.RESET}')
+    print(f'{style.BOLD}URL: {fore.BLUE}{request_data["url"]}{style.RESET}')
+    print(f'{style.BOLD}METHOD: {fore.BLUE}{request_data["method"]}{style.RESET}')
+    print(f'{style.BOLD}STATUS: {status_color}{response_data.status} {response_data.reason}{style.RESET}')
+    print(f'{style.BOLD}DATA:\n{response}{style.RESET}')
 
 if __name__ == "__main__":
     main()
