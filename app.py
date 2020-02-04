@@ -11,7 +11,7 @@ import json
 
 from wtf import WTF
 from pygments import highlight, lexers, formatters
-from colored import fore, style
+from colored import fore, back, style
 
 def colorized(response, response_type):
     response_formatted = response
@@ -32,25 +32,28 @@ def main():
     parser.add_argument("-r", "--raw", action="store_true", default=False, help="Colored output")
     args = parser.parse_args()
     
-    shit = WTF(args.file)
-    response = shit.get_response()
-    
-    if not args.raw:
-        response = colorized(response, shit.get_response_type())
-    
-    request_data = shit.get_request_data()
-    response_data = shit.get_response_raw()
-    
-    status_color = fore.GREEN
+    try:
+        shit = WTF(args.file)
+        response = shit.get_response()
+        
+        if not args.raw:
+            response = colorized(response, shit.get_response_type())
+        
+        request_data = shit.get_request_data()
+        response_data = shit.get_response_raw()
+        
+        status_color = fore.GREEN
 
-    if response_data.status != 200:
-        status_color = fore.RED
+        if response_data.status != 200:
+            status_color = fore.RED
 
-    print(f'{fore.LIGHT_GREEN}{style.BOLD}{request_data["label"]}{style.RESET}')
-    print(f'{style.BOLD}URL: {fore.BLUE}{request_data["url"]}{style.RESET}')
-    print(f'{style.BOLD}METHOD: {fore.BLUE}{request_data["method"]}{style.RESET}')
-    print(f'{style.BOLD}STATUS: {status_color}{response_data.status} {response_data.reason}{style.RESET}')
-    print(f'{style.BOLD}DATA:\n{response}{style.RESET}')
+        print(f'{fore.LIGHT_GREEN}{style.BOLD}{request_data["label"]}{style.RESET}')
+        print(f'{style.BOLD}URL: {fore.BLUE}{request_data["url"]}{style.RESET}')
+        print(f'{style.BOLD}METHOD: {fore.BLUE}{request_data["method"]}{style.RESET}')
+        print(f'{style.BOLD}STATUS: {status_color}{response_data.status} {response_data.reason}{style.RESET}')
+        print(f'{style.BOLD}DATA:\n{response}{style.RESET}')
+    except Exception as err:
+        print(f'{back.RED}{style.BOLD}{err}{style.RESET}\n')
 
 if __name__ == "__main__":
     main()

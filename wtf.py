@@ -58,7 +58,8 @@ class WTF:
                      url=data["url"],
                      method=data["method"],
                      headers=data["headers"],
-                     data=bytes(parse.urlencode(data["data"]), encoding="utf-8")
+                     data=bytes(parse.urlencode(data["data"]), encoding="utf-8"),
+                     unverifiable=True
                 )
         
         self.__response = request.urlopen(self.__request)
@@ -69,7 +70,12 @@ class WTF:
         self.__create_request(self.__request_data)
 
     def get_response(self):
-        html = self.__response.read().decode("utf-8")
+        html = ""
+        
+        try:
+            self.__response.read().decode("utf-8")
+        except:
+            pass
     
         return html
     
