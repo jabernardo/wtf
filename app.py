@@ -37,7 +37,14 @@ def main():
     if not args.raw:
         response = colorized(response, shit.get_response_type())
     
-    print(response)
+    request_data = shit.get_request_data()
+    response_data = shit.get_response_raw()
+    
+    print(f'LABEL: {request_data["label"]}')
+    print(f'URL: {request_data["url"]}')
+    print(f'METHOD: {request_data["method"]}')
+    print(f'STATUS: {response_data.status} {response_data.reason}')
+    print(f'DATA:\n{response}')
 
 if __name__ == "__main__":
     main()

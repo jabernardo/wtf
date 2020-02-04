@@ -7,6 +7,9 @@ class WTF:
     __input = ""
     
     __request_methods = ["GET", "POST", "PUT", "DELETE", "UPDATE", "HEAD", "OPTIONS"]    
+
+    __request_data = {}
+    __request = {}
     __response = {}
     
     def __init__(self, file):
@@ -28,6 +31,9 @@ class WTF:
         if not "url" in data:
             raise Exception("No URL.")
         
+        if not "label" in data:
+            data["label"] = data["url"]
+
         if not "method" in data:
             data["method"] = "GET"
         
@@ -48,19 +54,19 @@ class WTF:
 
 
     def __create_request(self, data):
-        req = request.Request(
+        self.__request = request.Request(
                      url=data["url"],
                      method=data["method"],
                      headers=data["headers"],
                      data=bytes(parse.urlencode(data["data"]), encoding="utf-8")
                 )
         
-        self.__response = request.urlopen(req)
+        self.__response = request.urlopen(self.__request)
     
     def __shit(self, formatted=True):
         data = self.__get_data()
-        safe_data = self.__clean_data(data)
-        self.__create_request(safe_data)
+        self.__request_data = self.__clean_data(data)
+        self.__create_request(self.__request_data)
 
     def get_response(self):
         html = self.__response.read().decode("utf-8")
@@ -72,6 +78,12 @@ class WTF:
     
     def get_response_type(self):
         return self.__response.headers.get('content-type')
+
+    def get_request(self):
+        return self.__request
+
+    def get_request_data(self):
+        return self.__request_data
     
             
         
