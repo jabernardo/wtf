@@ -73,7 +73,7 @@ class WTF:
         html = ""
         
         try:
-            self.__response.read().decode("utf-8")
+            html = self.__response.read().decode("utf-8")
         except:
             pass
     
