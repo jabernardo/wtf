@@ -9,7 +9,8 @@ Created on Tue Feb  4 12:07:34 2020
 import argparse
 import json
 
-from wtf import WTF
+from wtf import WTF, JSONFile
+from getpass import getpass
 from pygments import highlight, lexers, formatters
 from colored import fore, back, style
 
@@ -26,6 +27,14 @@ def colorized(response, response_type):
     
     return response_formatted
 
+def authenticate():
+    auth = {}
+
+    auth["username"] = input("Username: ")
+    auth["password"] = getpass("Password: ")
+
+    return auth
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--file", default="wtf.json", help="File input")
@@ -33,9 +42,14 @@ def main():
     args = parser.parse_args()
     
     try:
-        shit = WTF(args.file)
+        data = JSONFile(args.file).get_data()
+
+        if "authentication" in data:
+            data["authentication"] = authenticate()
+
+        shit = WTF(data)
         response = shit.get_response()
-        
+
         if not args.raw:
             response = colorized(response, shit.get_response_type())
         

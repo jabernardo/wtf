@@ -1,7 +1,8 @@
 {
     "label": "API3 Testing of Widgets",
-    "url": "http://localhost:8000/products/ddget",
+    "url": "http://localhost:8000/",
     "method": "GET",
+    "authentication": true,
     "data": {
         "q": "Hello World!"
     },

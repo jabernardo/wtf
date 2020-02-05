@@ -1,22 +1,17 @@
 # -*- coding: utf-8 -*-
 
 import json
+import base64
+from getpass import getpass
 from urllib import request, parse
 
-class WTF:
+class JSONFile:
     __input = ""
-    
-    __request_methods = ["GET", "POST", "PUT", "DELETE", "UPDATE", "HEAD", "OPTIONS"]    
 
-    __request_data = {}
-    __request = {}
-    __response = {}
-    
-    def __init__(self, file):
-        self.__input = file
-        self.__shit()
-    
-    def __get_data(self):
+    def __init__(self, input_file):
+        self.__input = input_file
+
+    def get_data(self):
         data = {}
         
         try:
@@ -26,11 +21,30 @@ class WTF:
             raise Exception("Invalid json file")
             
         return data
+
+class WTF:
+    __input = {}
+
+    __request_methods = ["GET", "POST", "PUT", "DELETE", "UPDATE", "HEAD", "OPTIONS"]    
+
+    __request_data = {}
+    __request = {}
+    __response = {}
+    
+    def __init__(self, input_data):
+        self.__input = input_data
+
+        self.__request_data = self.__clean_data(self.__input)
+        self.__create_request(self.__request_data)
     
     def __clean_data(self, data):
         if not "url" in data:
             raise Exception("No URL.")
         
+        if "authentication" in data:
+            if not "username" in data["authentication"] and not "password" in data["authentication"]:
+                raise Exception("Authentication Required")
+
         if not "label" in data:
             data["label"] = data["url"]
 
@@ -54,6 +68,11 @@ class WTF:
 
 
     def __create_request(self, data):
+        if "authentication" in data:
+            creds = data["authentication"]
+            auth = base64.b64encode("{0}:{1}".format(creds["username"], creds["password"]).encode())
+            data["headers"]["Authorization"] = "Basic {0}".format(auth.decode())
+
         self.__request = request.Request(
                      url=data["url"],
                      method=data["method"],
@@ -63,11 +82,6 @@ class WTF:
                 )
         
         self.__response = request.urlopen(self.__request)
-    
-    def __shit(self, formatted=True):
-        data = self.__get_data()
-        self.__request_data = self.__clean_data(data)
-        self.__create_request(self.__request_data)
 
     def get_response(self):
         html = ""
