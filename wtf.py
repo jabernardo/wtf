@@ -1,109 +1,77 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Created on Tue Feb  4 12:07:34 2020
 
+@author: jabernardo
+"""
+
+import argparse
 import json
-import base64
+import os.path
+
+from lib import WTF, JSONFile
 from getpass import getpass
-from urllib import request, parse
+from pygments import highlight, lexers, formatters
+from colored import fore, back, style
 
-class JSONFile:
-    __input = ""
-
-    def __init__(self, input_file):
-        self.__input = input_file
-
-    def get_data(self):
-        data = {}
-        
-        try:
-            with open(self.__input) as json_file:
-                data = json.load(json_file)
-        except:
-            raise Exception("Invalid json file")
-            
-        return data
-
-class WTF:
-    __input = {}
-
-    __request_methods = ["GET", "POST", "PUT", "DELETE", "UPDATE", "HEAD", "OPTIONS"]    
-
-    __request_data = {}
-    __request = {}
-    __response = {}
+def colorized(response, response_type):
+    response_formatted = response
     
-    def __init__(self, input_data):
-        self.__input = input_data
-
-        self.__request_data = self.__clean_data(self.__input)
-        self.__create_request(self.__request_data)
+    if "application/json" in response_type:
+        jsonified = json.loads(response)
+        formatted_json = json.dumps(jsonified, sort_keys=True, indent=4)
+        response_formatted = highlight(formatted_json, lexers.JsonLexer(), formatters.TerminalFormatter())
     
-    def __clean_data(self, data):
-        if not "url" in data:
-            raise Exception("No URL.")
-        
+    if "text/html" in response_type:
+        response_formatted = highlight(response, lexers.HtmlLexer(), formatters.TerminalFormatter())
+    
+    return response_formatted
+
+def authenticate():
+    auth = {}
+
+    auth["username"] = input("Username: ")
+    auth["password"] = getpass("Password: ")
+
+    return auth
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--file", default="wtf.json", help="File input")
+    parser.add_argument("-r", "--raw", action="store_true", default=False, help="Colored output")
+    args = parser.parse_args()
+    
+    try:
+        if not os.path.isfile(args.file):
+            raise Exception("No input file (wtf.json) ")
+
+        data = JSONFile(args.file).get_data()
+
         if "authentication" in data:
-            if not "username" in data["authentication"] and not "password" in data["authentication"]:
-                raise Exception("Authentication Required")
+            data["authentication"] = authenticate()
 
-        if not "label" in data:
-            data["label"] = data["url"]
+        shit = WTF(data)
+        response = shit.get_response()
 
-        if not "method" in data:
-            data["method"] = "GET"
+        if not args.raw:
+            response = colorized(response, shit.get_response_type())
         
-        if not "headers" in data:
-            data["headers"] = {}
-        else:
-            if not type(data["headers"]) is dict:
-                raise Exception("Invalid headers")
-                
-        if not "data" in data:
-            data["data"] = {}
-            
-        else:
-            if not type(data["data"]) is dict:
-                raise Exception("Invalid data")
-            
-        return data
-
-
-    def __create_request(self, data):
-        if "authentication" in data:
-            creds = data["authentication"]
-            auth = base64.b64encode("{0}:{1}".format(creds["username"], creds["password"]).encode())
-            data["headers"]["Authorization"] = "Basic {0}".format(auth.decode())
-
-        self.__request = request.Request(
-                     url=data["url"],
-                     method=data["method"],
-                     headers=data["headers"],
-                     data=bytes(parse.urlencode(data["data"]), encoding="utf-8"),
-                     unverifiable=True
-                )
+        request_data = shit.get_request_data()
+        response_data = shit.get_response_raw()
         
-        self.__response = request.urlopen(self.__request)
+        status_color = fore.GREEN
 
-    def get_response(self):
-        html = ""
-        
-        try:
-            html = self.__response.read().decode("utf-8")
-        except:
-            pass
-    
-        return html
-    
-    def get_response_raw(self):
-        return self.__response
-    
-    def get_response_type(self):
-        return self.__response.headers.get('content-type')
+        if response_data.status != 200:
+            status_color = fore.RED
 
-    def get_request(self):
-        return self.__request
+        print(f'{fore.LIGHT_GREEN}{style.BOLD}{request_data["label"]}{style.RESET}')
+        print(f'{style.BOLD}URL: {fore.BLUE}{request_data["url"]}{style.RESET}')
+        print(f'{style.BOLD}METHOD: {fore.BLUE}{request_data["method"]}{style.RESET}')
+        print(f'{style.BOLD}STATUS: {status_color}{response_data.status} {response_data.reason}{style.RESET}')
+        print(f'{style.BOLD}DATA:\n{response}{style.RESET}')
+    except Exception as err:
+        print(f'{back.RED}{style.BOLD}{err}{style.RESET}\n')
 
-    def get_request_data(self):
-        return self.__request_data
-    
-            
-        
+if __name__ == "__main__":
+    main()
