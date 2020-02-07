@@ -9,6 +9,7 @@
         "multi": {
             "test": "string"
         },
-        "fruits": "array"
+        "fruits": "array",
+        "asdasd": "string"
     }
 }

@@ -17,17 +17,24 @@ class AssertJSON:
             if parent:
                 assert_key = f"{parent}.{key}"
 
-            status = "PASSED"
+            status = "FAILED"
+            actual_type = "None"
 
-            if not key in actual:
-                status = "FAILED"
+            if key in actual:
+                expected_type = type(expected[key]).__name__,
+                actual_type = type(actual[key]).__name__
+
+                if expected_type == actual_type:
+                    status = "PASSED"
 
             self.__results.append({
                 "status": status,
-                "key": assert_key
+                "key": assert_key,
+                "expected": expected_type,
+                "actual": actual_type
             })
 
-            if type(expected[key]) == dict:
+            if expected_type == 'dict':
                 self.__assert(expected[key], actual[key], assert_key)
 
     def get_results(self):
