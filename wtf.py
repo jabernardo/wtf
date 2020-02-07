@@ -73,6 +73,7 @@ def main():
         print(f'{style.BOLD}URL: {fore.BLUE}{request_data["url"]}{style.RESET}')
         print(f'{style.BOLD}METHOD: {fore.BLUE}{request_data["method"]}{style.RESET}')
         print(f'{style.BOLD}STATUS: {status_color}{response_data.status} {response_data.reason}{style.RESET}')
+        print(f'{style.BOLD}HEADERS: {fore.BLUE}\n{response_data.headers}{style.RESET}')
         print(f'{style.BOLD}DATA:\n{response}{style.RESET}')
     except Exception as err:
         print(f'{back.RED}{style.BOLD}{err}{style.RESET}\n')
