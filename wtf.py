@@ -11,6 +11,8 @@ import json
 import os.path
 
 from lib import WTF, JSONFile
+from lib.assert_json import AssertJSON 
+import json
 from getpass import getpass
 from pygments import highlight, lexers, formatters
 from colored import fore, back, style
@@ -75,6 +77,17 @@ def main():
         print(f'{style.BOLD}STATUS: {status_color}{response_data.status} {response_data.reason}{style.RESET}')
         print(f'{style.BOLD}HEADERS: {fore.BLUE}\n{response_data.headers}{style.RESET}')
         print(f'{style.BOLD}DATA:\n{response}{style.RESET}')
+
+        if "assert" in data:
+            actual_data = shit.get_response()
+
+            try:
+                actual_data = json.loads(actual_data)
+            except:
+                raise Exception("Response is not supported for assert.")
+
+            assert_obj = AssertJSON(data["assert"], actual_data)
+            print(assert_obj.get_results())
     except Exception as err:
         print(f'{back.RED}{style.BOLD}{err}{style.RESET}\n')
 

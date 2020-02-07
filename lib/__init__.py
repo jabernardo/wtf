@@ -28,6 +28,7 @@ class WTF:
     __request_data = {}
     __request = {}
     __response = {}
+    __response_data = ""
     
     def __init__(self, input_data):
         self.__input = input_data
@@ -82,14 +83,13 @@ class WTF:
         self.__response = request.urlopen(self.__request)
 
     def get_response(self):
-        html = ""
-        
         try:
-            html = self.__response.read().decode("utf-8")
+            if not self.__response_data:
+                self.__response_data = self.__response.read().decode("utf-8")
         except:
             pass
     
-        return html
+        return self.__response_data
     
     def get_response_raw(self):
         return self.__response
