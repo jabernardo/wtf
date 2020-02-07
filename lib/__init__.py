@@ -25,8 +25,6 @@ class JSONFile:
 class WTF:
     __input = {}
 
-    __request_methods = ["GET", "POST", "PUT", "DELETE", "UPDATE", "HEAD", "OPTIONS"]    
-
     __request_data = {}
     __request = {}
     __response = {}
