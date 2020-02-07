@@ -28,11 +28,12 @@ def colorized(response, response_type):
     
     return response_formatted
 
-def authenticate():
-    auth = {}
+def authenticate(auth = {}):
+    if not "username" in auth:
+        auth["username"] = input("Username: ")
 
-    auth["username"] = input("Username: ")
-    auth["password"] = getpass("Password: ")
+    if not "password" in auth:
+        auth["password"] = getpass("Password: ")
 
     return auth
 
@@ -49,7 +50,10 @@ def main():
         data = JSONFile(args.file).get_data()
 
         if "authentication" in data:
-            data["authentication"] = authenticate()
+            if type(data["authentication"]) == dict:
+                data["authentication"] = authenticate(data["authentication"])
+            else:
+                data["authentication"] = authenticate()
 
         shit = WTF(data)
         response = shit.get_response()
