@@ -39,9 +39,36 @@ def authenticate(auth = {}):
 
     return auth
 
+def assert_results(expected, actual_data):
+    if not "assert" in expected:
+        raise Exception("No tests found")
+
+    try:
+        actual_data = json.loads(actual_data)
+    except:
+        raise Exception("Response is not supported for assert.")
+
+    assert_obj = AssertJSON(expected["assert"], actual_data)
+
+    results = assert_obj.get_results()
+    total_tests = len(results)
+    total_failed = 0
+
+    for result in results:
+        if result['status'] == 'FAILED':
+            total_failed += 1
+        
+            print(f"Key: {result['key']} ({result['status']})")
+            print(f"Expected value: {result['expected_val']}")
+            print(f"Actual value: {result['actual_val']}")
+            print("================================================================================")
+
+    print(f"{total_failed} failed out of {total_tests}")
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--file", default="wtf.json", help="File input")
+    parser.add_argument("-a", "--test", action="store_true", default=False, help="Assert results")
     parser.add_argument("-r", "--raw", action="store_true", default=False, help="Colored output")
     args = parser.parse_args()
     
@@ -71,23 +98,16 @@ def main():
         if response_data.status != 200:
             status_color = fore.RED
 
-        print(f'{fore.LIGHT_GREEN}{style.BOLD}{request_data["label"]}{style.RESET}')
-        print(f'{style.BOLD}URL: {fore.BLUE}{request_data["url"]}{style.RESET}')
-        print(f'{style.BOLD}METHOD: {fore.BLUE}{request_data["method"]}{style.RESET}')
-        print(f'{style.BOLD}STATUS: {status_color}{response_data.status} {response_data.reason}{style.RESET}')
-        print(f'{style.BOLD}HEADERS: {fore.BLUE}\n{response_data.headers}{style.RESET}')
-        print(f'{style.BOLD}DATA:\n{response}{style.RESET}')
+        if args.test:
+            assert_results(data, shit.get_response())
+        else:
+            print(f'{fore.LIGHT_GREEN}{style.BOLD}{request_data["label"]}{style.RESET}')
+            print(f'{style.BOLD}URL: {fore.BLUE}{request_data["url"]}{style.RESET}')
+            print(f'{style.BOLD}METHOD: {fore.BLUE}{request_data["method"]}{style.RESET}')
+            print(f'{style.BOLD}STATUS: {status_color}{response_data.status} {response_data.reason}{style.RESET}')
+            print(f'{style.BOLD}HEADERS: {fore.BLUE}\n{response_data.headers}{style.RESET}')
+            print(f'{style.BOLD}DATA:\n{response}{style.RESET}')
 
-        if "assert" in data:
-            actual_data = shit.get_response()
-
-            try:
-                actual_data = json.loads(actual_data)
-            except:
-                raise Exception("Response is not supported for assert.")
-
-            assert_obj = AssertJSON(data["assert"], actual_data)
-            print(assert_obj.get_results())
     except Exception as err:
         print(f'{back.RED}{style.BOLD}{err}{style.RESET}\n')
 

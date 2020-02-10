@@ -10,7 +10,7 @@
             "test": "Hello"
         },
         "fruits": "type:list",
-        "asdasd": "string",
+        "asdasd": "type:string",
         "test_int": 12,
         "test_float": 12.01
     }
