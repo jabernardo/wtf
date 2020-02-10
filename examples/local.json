@@ -7,9 +7,11 @@
     },
     "assert": {
         "multi": {
-            "test": "string"
+            "test": "Hello"
         },
-        "fruits": "array",
-        "asdasd": "string"
+        "fruits": "type:list",
+        "asdasd": "string",
+        "test_int": 12,
+        "test_float": 12.01
     }
 }
