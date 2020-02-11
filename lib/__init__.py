@@ -12,7 +12,7 @@ class JSONFile:
     __input = ""
 
     def __init__(self, input_file):
-        """ Class construct\n
+        """JSON File parser\n
 
         \nArguments:\n
         :param input_file (str) -- Source file path
@@ -34,7 +34,7 @@ class JSONFile:
                 data = json.load(json_file)
         except:
             raise Exception("Invalid json file")
-            
+
         return data
 
 class WTF:
@@ -48,7 +48,7 @@ class WTF:
     __response_data = ""
     
     def __init__(self, input_data):
-        """Class construct\n
+        """WTF! Console POST\n
 
         \nArguments:\n
         `input_data` (dict) Request information

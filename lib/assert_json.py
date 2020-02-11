@@ -1,4 +1,6 @@
 class AssertJSON:
+    """Assert JSON Class"""
+
     __results = []
 
     __check_type_sub = "type:"
@@ -11,6 +13,12 @@ class AssertJSON:
     }
 
     def __init__(self, expected, actual):
+        """Assert JSON Class\n
+
+        \nArguments:\n
+        `expected` (dict) -- Expected output
+        `actual` (dict) -- Actual output
+        """
         if not type(expected) == dict:
             raise Exception("Expected results should be a type(dict)")
 
@@ -20,6 +28,13 @@ class AssertJSON:
         self.__assert(expected, actual)
 
     def __assert(self, expected, actual, parent = ""):
+        """Assert JSON\n
+
+        \nArguments:\n
+        `expected` (dict) Expected output
+        `actual` (dict) Actual output
+        `parent` (str) Key
+        """
         for key in expected:
             assert_key = key
 
@@ -56,7 +71,20 @@ class AssertJSON:
                 self.__assert(expected[key], actual[key], assert_key)
 
     def __get_type_from_string(self, text):
+        """Get type from string (example: "type:string")\n
+        
+        \nArguments:\n
+        `text` (str) String
+
+        \nReturns:\n
+        `str`
+        """
         return self.__datatype_map[text]
 
     def get_results(self):
+        """Get test results\n
+
+        \nReturns:\n
+        `list<dict>`
+        """
         return self.__results
