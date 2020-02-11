@@ -1,2 +1,1 @@
-WTF! Console POST
-[![asciicast](https://asciinema.org/a/299856.svg)](Sample WTF Usage)
+[![asciicast](https://asciinema.org/a/299856.svg)](https://asciinema.org/a/299856)
