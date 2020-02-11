@@ -6,12 +6,27 @@ from getpass import getpass
 from urllib import request, parse
 
 class JSONFile:
+    """JSON File parser"""
+
+    # File path
     __input = ""
 
     def __init__(self, input_file):
+        """ Class construct\n
+
+        \nArguments:\n
+        :param input_file (str) -- Source file path
+        
+        """
         self.__input = input_file
 
     def get_data(self):
+        """Read json data\n
+
+        \nReturn:\n
+        `dict` -- Parsed JSON file
+        """
+
         data = {}
         
         try:
@@ -23,6 +38,8 @@ class JSONFile:
         return data
 
 class WTF:
+    """WTF! Console POST"""
+
     __input = {}
 
     __request_data = {}
@@ -31,12 +48,30 @@ class WTF:
     __response_data = ""
     
     def __init__(self, input_data):
+        """Class construct\n
+
+        \nArguments:\n
+        `input_data` (dict) Request information
+        """
+
+        if not type(input_data) == dict:
+            raise Exception("Input must be a dictionary")
+
         self.__input = input_data
 
         self.__request_data = self.__clean_data(self.__input)
         self.__create_request(self.__request_data)
     
     def __clean_data(self, data):
+        """Sanitize input data\n
+
+        \nArguments:\n
+        `data` (dict) -- Input data
+
+        \nReturns:\n
+        `dict`
+        """
+
         if not "url" in data:
             raise Exception("No URL.")
         
@@ -67,6 +102,15 @@ class WTF:
 
 
     def __create_request(self, data):
+        """Create request object
+
+        \nArguments:\n
+        `data` (dict) -- Input data
+
+        \nReturns:\n
+        None
+        """
+
         if "authentication" in data:
             creds = data["authentication"]
             auth = base64.b64encode("{0}:{1}".format(creds["username"], creds["password"]).encode())
@@ -83,6 +127,11 @@ class WTF:
         self.__response = request.urlopen(self.__request)
 
     def get_response(self):
+        """Get response
+
+        \nReturns:\n
+        `str`
+        """
         try:
             if not self.__response_data:
                 self.__response_data = self.__response.read().decode("utf-8")
@@ -92,16 +141,34 @@ class WTF:
         return self.__response_data
     
     def get_response_raw(self):
+        """Get response object
+
+        \nReturns:\n
+        `Response`
+        """
+
         return self.__response
     
     def get_response_type(self):
+        """Get response type
+
+        \nReturns:\n
+        `str`
+        """
         return self.__response.headers.get('content-type')
 
     def get_request(self):
+        """Get request object
+
+        \nReturns:\n
+        `class`
+        """
         return self.__request
 
     def get_request_data(self):
+        """Get request data
+
+        \nReturns:\n
+        `dict`
+        """
         return self.__request_data
-    
-            
-        
