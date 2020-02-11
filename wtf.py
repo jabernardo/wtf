@@ -58,12 +58,15 @@ def assert_results(expected, actual_data):
         if result['status'] == 'FAILED':
             total_failed += 1
         
-            print(f"Key: {result['key']} ({result['status']})")
-            print(f"Expected value: {result['expected_val']}")
-            print(f"Actual value: {result['actual_val']}")
-            print("================================================================================")
+            print(f"{'Object Key:':<20} {fore.YELLOW}{result['key']} {fore.LIGHT_GRAY}{back.RED}{style.BOLD}({result['status']}){style.RESET}")
+            print(f"{'Expected value:':<20} {fore.GREEN}{result['expected_val']}{style.RESET}")
+            print(f"{'Actual value:':<20} {fore.RED}{result['actual_val']}{style.RESET}")
+            print(f"{fore.DARK_GRAY}================================================================================{style.RESET}")
 
-    print(f"{total_failed} failed out of {total_tests}")
+    if total_failed:
+        print(f"{fore.RED}{total_failed} failed {fore.LIGHT_GRAY}out of {fore.GREEN}{total_tests}{style.RESET}\n")
+    else:
+        print(f"{style.BOLD}{back.GREEN}{fore.LIGHT_GRAY}ALL GOOD!{style.RESET}\n")
 
 def main():
     parser = argparse.ArgumentParser()
@@ -102,9 +105,9 @@ def main():
             assert_results(data, shit.get_response())
         else:
             print(f'{fore.LIGHT_GREEN}{style.BOLD}{request_data["label"]}{style.RESET}')
-            print(f'{style.BOLD}URL: {fore.BLUE}{request_data["url"]}{style.RESET}')
-            print(f'{style.BOLD}METHOD: {fore.BLUE}{request_data["method"]}{style.RESET}')
-            print(f'{style.BOLD}STATUS: {status_color}{response_data.status} {response_data.reason}{style.RESET}')
+            print(f'{style.BOLD}{"URL:":<20} {fore.BLUE}{request_data["url"]}{style.RESET}')
+            print(f'{style.BOLD}{"METHOD:":<20} {fore.BLUE}{request_data["method"]}{style.RESET}')
+            print(f'{style.BOLD}{"STATUS:":<20} {status_color}{response_data.status} {response_data.reason}{style.RESET}')
             print(f'{style.BOLD}HEADERS: {fore.BLUE}\n{response_data.headers}{style.RESET}')
             print(f'{style.BOLD}DATA:\n{response}{style.RESET}')
 
