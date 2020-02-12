@@ -17,7 +17,6 @@ import os.path
 
 from lib import WTF, JSONFile
 from lib.assert_json import AssertJSON 
-import json
 from getpass import getpass
 from pygments import highlight, lexers, formatters
 from colored import fore, back, style
