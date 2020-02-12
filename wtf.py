@@ -149,8 +149,8 @@ def main():
     """
 
     parser = argparse.ArgumentParser()
-    # wtf -f {file} or wtf --file {file}
-    parser.add_argument("-f", "--file", default="wtf.json", help="File input")
+    # positional file argument
+    parser.add_argument("source", nargs="?", default="wtf.json", help="File input")
     # wtf -a or wtf --test
     ## Run assert tests
     parser.add_argument("-a", "--test", action="store_true", default=False, help="Assert results")
@@ -160,11 +160,11 @@ def main():
     args = parser.parse_args()
     
     try:
-        if not os.path.isfile(args.file):
+        if not os.path.isfile(args.source):
             raise Exception("No input file (wtf.json) ")
 
         # Load json file
-        data = JSONFile(args.file).get_data()
+        data = JSONFile(args.source).get_data()
 
         if "authentication" in data:
             if type(data["authentication"]) == dict:
