@@ -2,7 +2,7 @@
 Yet another cURL but using JSON files. WTF! could also be used to assert API results
 
 ## Demo
-[![asciicast](https://asciinema.org/a/299856.svg)](https://asciinema.org/a/299856)
+[![asciicast](https://asciinema.org/a/300449.svg)](https://asciinema.org/a/300449)
 
 ## Prerequisites
 Before you continue, ensure you have met the following requirements:
