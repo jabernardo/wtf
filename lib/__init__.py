@@ -4,6 +4,7 @@ import json
 import base64
 from getpass import getpass
 from urllib import request, parse
+from time import time
 
 class JSONFile:
     """JSON File parser"""
@@ -46,6 +47,8 @@ class WTF:
     __request = {}
     __response = {}
     __response_data = ""
+
+    __profile = {}
     
     def __init__(self, input_data):
         """WTF! Console POST\n
@@ -124,7 +127,11 @@ class WTF:
                      unverifiable=True
                 )
         
+        time_start = time()
         self.__response = request.urlopen(self.__request)
+        time_stop = time()
+
+        self.__profile["time"] = time_stop - time_start
 
     def get_response(self):
         """Get response
@@ -172,3 +179,9 @@ class WTF:
         `dict`
         """
         return self.__request_data
+
+    def get_profile(self, key = None):
+        if not key is None:
+            return None if not key in self.__profile else self.__profile[key]
+
+        return self.__profile

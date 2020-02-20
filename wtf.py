@@ -137,11 +137,12 @@ def console(source, formatted_response = True):
         status_color = fore.RED
 
     print(f'{fore.LIGHT_GREEN}{style.BOLD}{request_data["label"]}{style.RESET}')
-    print(f'{style.BOLD}{"URL:":<20} {fore.BLUE}{request_data["url"]}{style.RESET}')
-    print(f'{style.BOLD}{"METHOD:":<20} {fore.BLUE}{request_data["method"]}{style.RESET}')
-    print(f'{style.BOLD}{"STATUS:":<20} {status_color}{response_data.status} {response_data.reason}{style.RESET}')
-    print(f'{style.BOLD}HEADERS: {fore.BLUE}\n{response_data.headers}{style.RESET}')
-    print(f'{style.BOLD}DATA:\n{response}{style.RESET}')
+    print(f'{style.BOLD}{"URL: ":<20} {fore.BLUE}{request_data["url"]}{style.RESET}')
+    print(f'{style.BOLD}{"METHOD: ":<20} {fore.BLUE}{request_data["method"]}{style.RESET}')
+    print(f'{style.BOLD}{"STATUS: ":<20} {status_color}{response_data.status} {response_data.reason}{style.RESET}')
+    print(f'{style.BOLD}HEADERS : {fore.BLUE}\n{response_data.headers}{style.RESET}')
+    print(f'{style.BOLD}DATA: \n{response}{style.RESET}')
+    print(f'{style.BOLD}RESPONSE TIME: {fore.BLUE}{source.get_profile("time")}{style.RESET}')
 
 
 def main():
