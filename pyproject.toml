@@ -11,6 +11,7 @@ argparse = "^1.4.0"
 pygments = "^2.5.2"
 colored = "^1.4.2"
 pyinstaller = "^3.6"
+lowder = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 

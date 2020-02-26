@@ -21,6 +21,8 @@ from getpass import getpass
 from pygments import highlight, lexers, formatters
 from colored import fore, back, style
 
+from lowder import Lowder, LOADERS
+
 def colorized(response, response_type):
     """Colorized responses output
 
@@ -75,7 +77,7 @@ def assert_results(expected, actual_data):
     `actual_data` (dict) -- Actual response json
 
     \nReturns:\n
-    `None`
+    `str`
     """
 
     # Validate if assertions are specified on the json file
@@ -94,20 +96,23 @@ def assert_results(expected, actual_data):
     results = assert_obj.get_results()
     total_tests = len(results)
     total_failed = 0
+    report = ""
 
     for result in results:
         if result['status'] == 'FAILED':
             total_failed += 1
         
-            print(f"{'Object Key:':<20} {fore.YELLOW}{result['key']} {fore.LIGHT_GRAY}{back.RED}{style.BOLD}({result['status']}){style.RESET}")
-            print(f"{'Expected value:':<20} {fore.GREEN}{result['expected_val']}{style.RESET}")
-            print(f"{'Actual value:':<20} {fore.RED}{result['actual_val']}{style.RESET}")
-            print(f"{fore.DARK_GRAY}================================================================================{style.RESET}")
+            report += f"{'Object Key:':<20} {fore.YELLOW}{result['key']} {fore.LIGHT_GRAY}{back.RED}{style.BOLD}({result['status']}){style.RESET}"
+            report += f"{'Expected value:':<20} {fore.GREEN}{result['expected_val']}{style.RESET}"
+            report += f"{'Actual value:':<20} {fore.RED}{result['actual_val']}{style.RESET}"
+            report += "{fore.DARK_GRAY}================================================================================{style.RESET}"
 
     if total_failed:
-        print(f"{fore.RED}{total_failed} failed {fore.LIGHT_GRAY}out of {fore.GREEN}{total_tests}{style.RESET}\n")
+        report += f"{fore.RED}{total_failed} failed {fore.LIGHT_GRAY}out of {fore.GREEN}{total_tests}{style.RESET}\n"
     else:
-        print(f"{style.BOLD}{back.GREEN}{fore.LIGHT_GRAY}ALL GOOD!{style.RESET}\n")
+        report += f"{style.BOLD}{back.GREEN}{fore.LIGHT_GRAY}ALL GOOD!{style.RESET}\n"
+        
+    return report
 
 def console(source, formatted_response = True):
     """Console POST\n
@@ -117,7 +122,7 @@ def console(source, formatted_response = True):
     `formatted_response` (bool=True) -- Show formatted output
 
     \nReturns:\n
-    `None`
+    `str`
     """
 
     if not isinstance(source, WTF):
@@ -136,14 +141,53 @@ def console(source, formatted_response = True):
     if response_data.status != 200:
         status_color = fore.RED
 
-    print(f'{fore.LIGHT_GREEN}{style.BOLD}{request_data["label"]}{style.RESET}')
-    print(f'{style.BOLD}{"URL: ":<20} {fore.BLUE}{request_data["url"]}{style.RESET}')
-    print(f'{style.BOLD}{"METHOD: ":<20} {fore.BLUE}{request_data["method"]}{style.RESET}')
-    print(f'{style.BOLD}{"STATUS: ":<20} {status_color}{response_data.status} {response_data.reason}{style.RESET}')
-    print(f'{style.BOLD}HEADERS : {fore.BLUE}\n{response_data.headers}{style.RESET}')
-    print(f'{style.BOLD}DATA: \n{response}{style.RESET}')
-    print(f'{style.BOLD}RESPONSE TIME: {fore.BLUE}{source.get_profile("time")}{style.RESET}')
+    report = ""
+    report += f'{fore.LIGHT_GREEN}{style.BOLD}{request_data["label"]}{style.RESET}'
+    report += f'{style.BOLD}{"URL: ":<20} {fore.BLUE}{request_data["url"]}{style.RESET}'
+    report += f'{style.BOLD}{"METHOD: ":<20} {fore.BLUE}{request_data["method"]}{style.RESET}'
+    report += f'{style.BOLD}{"STATUS: ":<20} {status_color}{response_data.status} {response_data.reason}{style.RESET}'
+    report += f'{style.BOLD}HEADERS : {fore.BLUE}\n{response_data.headers}{style.RESET}'
+    report += f'{style.BOLD}DATA: \n{response}{style.RESET}'
+    report += f'{style.BOLD}RESPONSE TIME: {fore.BLUE}{source.get_profile("time")}{style.RESET}'
+    return report
 
+def call_lowder(loader, data):
+    """Call WTF thread\n
+    \nArguments:\n
+    `loader` (Lowder) -- Instance of Lowder\n
+    `data` (dict) -- WTF Configuration data\n
+    
+    \nReturns:\n
+    `object`
+    """
+    try:
+        result = WTF(data)
+    except Exception as ex:
+        return ex
+    finally:
+        loader.stop()
+    
+    return result
+
+def call_assert(loader, expected, actual):
+    """Call WTF thread\n
+    \nArguments:\n
+    `loader` (Lowder) -- Instance of Lowder\n
+    `expected` (dict) -- WTF Configuration assert data\n
+    `actual` (dict) -- JSON response data\n
+    
+    \nReturns:\n
+    `object`
+    """
+    try:
+        result = assert_results(expected, actual)
+    except Exception as ex:
+        return ex
+    finally:
+        loader.stop()
+        
+    return result
+    
 
 def main():
     """Application entry-point
@@ -173,12 +217,17 @@ def main():
             else:
                 data["authentication"] = authenticate()
 
-        shit = WTF(data)
+        load_screen = Lowder()
+        shit = load_screen.start("Fetching...", lambda: call_lowder(load_screen, data), LOADERS['dots'])
 
+        if isinstance(shit, Exception):
+            raise shit
+                
         if args.test:
-            assert_results(data, shit.get_response())
+            report = load_screen.start("Loading test results...", lambda: call_assert(load_screen, data, shit.get_response()), LOADERS['dots'])
+            print(report)
         else:
-            console(shit, not args.raw)
+            print(console(shit, not args.raw))
 
     except Exception as err:
         print(f'{back.RED}{style.BOLD}{err}{style.RESET}\n')
