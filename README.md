@@ -15,8 +15,6 @@ Before you continue, ensure you have met the following requirements:
 # Clone repository
 git clone https://github.com/jabernardo/wtf
 cd wtf
-# Install dependencies using poetry
-poetry install
 # Make it install!
 make install
 # Test

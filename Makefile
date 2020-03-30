@@ -1,8 +1,11 @@
 BIN = wtf
 SRC = $(BIN).py
-INSTALL = /usr/local/bin/
+INSTALL = ~/.local/bin/
 
-build:
+install_dep:
+	pip install -r ./requirements.txt
+
+build: install_dep
 	pyinstaller $(SRC) --onefile --noconfirm
 
 install: build
