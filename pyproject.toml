@@ -13,6 +13,9 @@ colored = "^1.4.2"
 pyinstaller = "^3.6"
 lowder = "^0.6.0"
 
+[tool.poetry.scripts]
+wtf = "wtf:main"
+
 [tool.poetry.dev-dependencies]
 
 [build-system]
