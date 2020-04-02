@@ -35,6 +35,7 @@ class JSONFile:
         try:
             with open(self.__input) as json_file:
                 data = json.load(json_file)
+                json_file.close()
         except:
             raise Exception("Invalid json file")
 
