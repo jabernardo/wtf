@@ -15,7 +15,8 @@ import argparse
 import json
 import os.path
 
-from lib import WTF, JSONFile
+from lib import WTF, JSONFile, ArgumentsParser
+import lib.validators as validators
 from lib.assert_json import AssertJSON 
 from getpass import getpass
 from pygments import highlight, lexers, formatters
@@ -187,11 +188,9 @@ def call_assert(loader, expected, actual):
         loader.stop()
         
     return result
-    
 
-def main():
-    """Application entry-point
-    """
+def get_args():
+    """Parse arguments"""
 
     parser = argparse.ArgumentParser()
     # positional file argument
@@ -202,14 +201,32 @@ def main():
     # wtf -f {file} -r or wtf -f {file} --raw
     ## Show raw output only
     parser.add_argument("-r", "--raw", action="store_true", default=False, help="Colored output")
-    args = parser.parse_args()
+
+    # In-line data collection params
+    parser.add_argument("-m", "--method", default="GET", help="In-line request: http request")
+    parser.add_argument("-l", "--login", action="store_true", default=False, help="In-line request: login")
+    parser.add_argument("-d", "--data", action="append", nargs='*', default=None, help="In-line request: data")
+
+    return parser.parse_args()
+
+def main():
+    """Application entry-point
+    """
+
+    # Dict data
+    data = {}
+
+    # Parse arguments
+    args = get_args()
     
     try:
-        if not os.path.isfile(args.source):
-            raise Exception("No input file (wtf.json) ")
+        if not os.path.isfile(args.source) and not validators.is_url(args.source):
+            raise Exception("No input file (wtf.json) or valid url given.")
 
-        # Load json file
-        data = JSONFile(args.source).get_data()
+        if validators.is_url(args.source):
+            data = ArgumentsParser(args).items()
+        else:
+            data = JSONFile(args.source).get_data()
 
         if "authentication" in data:
             if type(data["authentication"]) == dict:

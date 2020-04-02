@@ -2,6 +2,8 @@
 
 import json
 import base64
+import re
+
 from getpass import getpass
 from urllib import request, parse
 from time import time
@@ -37,6 +39,48 @@ class JSONFile:
             raise Exception("Invalid json file")
 
         return data
+
+class ArgumentsParser:
+    __data = {}
+
+    def __init__(self, args):
+        """Create request data based from arguments\n
+        \nArguments:\n:
+        `args` (dict) -- Command-line arguments\n
+        """
+
+        self.__data = {
+            "url": args.source,
+            "method": args.method
+        }
+
+        if args.data:
+            self.__data["data"] = self.__parse_data(args.data)
+
+        if args.login:
+            self.__data["authentication"] = True
+
+    def __parse_data(self, data):
+        if isinstance(data, list):
+            return_data = {}
+
+            for value in data:
+                matches = re.findall(r"(\w+)=(.*)", value[0])
+
+                if matches:
+                    key, val = matches[0]
+                    return_data[key] = val
+
+            return return_data
+
+        return return_data
+
+    def items(self):
+        """Get data
+        \nReturns:\n:
+        `dict`
+        """
+        return self.__data
 
 class WTF:
     """WTF! Console POST"""
