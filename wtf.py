@@ -11,6 +11,8 @@ WTF! Console POST
 @email: 4ldrich@protonmail.com
 """
 
+__version__ = "0.1.0"
+
 import argparse
 import json
 import os.path
@@ -208,6 +210,9 @@ def get_args():
     parser.add_argument("-d", "--data", action="append", nargs='*', default=None, help="In-line request: data")
     parser.add_argument("-o", "--out", default=None, help="In-line request: save to json")
 
+    # Show version
+    parser.add_argument("-v", "--version", default=False, action="store_true", help="Show application version")
+
     return parser.parse_args()
 
 def json_dump(file_name, data):
@@ -225,6 +230,9 @@ def json_dump(file_name, data):
     except Exception as ex:
         raise ex
 
+def show_version():
+    print(f'Version: {__version__}\n')
+
 def main():
     """Application entry-point
     """
@@ -234,6 +242,9 @@ def main():
 
     # Parse arguments
     args = get_args()
+
+    if args.version:
+        return show_version()
     
     try:
         if not os.path.isfile(args.source) and not validators.is_url(args.source):
