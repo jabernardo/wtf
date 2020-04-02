@@ -206,8 +206,24 @@ def get_args():
     parser.add_argument("-m", "--method", default="GET", help="In-line request: http request")
     parser.add_argument("-l", "--login", action="store_true", default=False, help="In-line request: login")
     parser.add_argument("-d", "--data", action="append", nargs='*', default=None, help="In-line request: data")
+    parser.add_argument("-o", "--out", default=None, help="In-line request: save to json")
 
     return parser.parse_args()
+
+def json_dump(file_name, data):
+    """JSON Dump\n
+    \nArguments:\n
+    `file_name` (str) -- Dumps filename\n
+    `data` (dict) -- Data to be written\n
+    \nThrows:\n
+    `Exception`
+    """
+    try:
+        with open(file_name, "w") as json_out:
+            json_out.write(json.dumps(data))
+            json_out.close()
+    except Exception as ex:
+        raise ex
 
 def main():
     """Application entry-point
@@ -225,6 +241,9 @@ def main():
 
         if validators.is_url(args.source):
             data = ArgumentsParser(args).items()
+
+            if args.out:
+                json_dump(args.out, data)
         else:
             data = JSONFile(args.source).get_data()
 
