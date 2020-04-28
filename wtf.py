@@ -145,13 +145,13 @@ def console(source, formatted_response = True):
         status_color = fore.RED
 
     report = ""
-    report += f'{fore.LIGHT_GREEN}{style.BOLD}{request_data["label"]}{style.RESET}'
-    report += f'{style.BOLD}{"URL: ":<20} {fore.BLUE}{request_data["url"]}{style.RESET}'
-    report += f'{style.BOLD}{"METHOD: ":<20} {fore.BLUE}{request_data["method"]}{style.RESET}'
-    report += f'{style.BOLD}{"STATUS: ":<20} {status_color}{response_data.status} {response_data.reason}{style.RESET}'
-    report += f'{style.BOLD}HEADERS : {fore.BLUE}\n{response_data.headers}{style.RESET}'
-    report += f'{style.BOLD}DATA: \n{response}{style.RESET}'
-    report += f'{style.BOLD}RESPONSE TIME: {fore.BLUE}{source.get_profile("time")}{style.RESET}'
+    report += f'{fore.LIGHT_GREEN}{style.BOLD}{request_data["label"]}{style.RESET}\n'
+    report += f'{style.BOLD}{"URL: ":<20} {fore.BLUE}{request_data["url"]}{style.RESET}\n'
+    report += f'{style.BOLD}{"METHOD: ":<20} {fore.BLUE}{request_data["method"]}{style.RESET}\n'
+    report += f'{style.BOLD}{"STATUS: ":<20} {status_color}{response_data.status} {response_data.reason}{style.RESET}\n'
+    report += f'{style.BOLD}HEADERS : {fore.BLUE}\n{response_data.headers}{style.RESET}\n'
+    report += f'{style.BOLD}DATA: \n{response}{style.RESET}\n'
+    report += f'{style.BOLD}RESPONSE TIME: {fore.BLUE}{source.get_profile("time")}{style.RESET}\n'
     return report
 
 def call_lowder(loader, data):
@@ -208,6 +208,7 @@ def get_args():
     parser.add_argument("-m", "--method", default="GET", help="In-line request: http request")
     parser.add_argument("-l", "--login", action="store_true", default=False, help="In-line request: login")
     parser.add_argument("-d", "--data", action="append", nargs='*', default=None, help="In-line request: data")
+    parser.add_argument("-H", "--header", action="append", nargs='*', default=None, help="In-line request: header")
     parser.add_argument("-o", "--out", default=None, help="In-line request: save to json")
 
     # Show version

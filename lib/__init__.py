@@ -58,6 +58,9 @@ class ArgumentsParser:
         if args.data:
             self.__data["data"] = self.__parse_data(args.data)
 
+        if args.header:
+            self.__data["headers"] = self.__parse_data(args.header)
+
         if args.login:
             self.__data["authentication"] = True
 
