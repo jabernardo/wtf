@@ -42,12 +42,12 @@ def colorized(response, response_type):
     # Content-types from response headers
     # todo:
     #  - Add more types to support see supported lexers by pygment
-    if "application/json" in response_type:
+    if response_type and "application/json" in response_type:
         jsonified = json.loads(response)
         formatted_json = json.dumps(jsonified, sort_keys=True, indent=4)
         response_formatted = highlight(formatted_json, lexers.JsonLexer(), formatters.TerminalFormatter())
     
-    if "text/html" in response_type:
+    if response_type and "text/html" in response_type:
         response_formatted = highlight(response, lexers.HtmlLexer(), formatters.TerminalFormatter())
     
     return response_formatted
