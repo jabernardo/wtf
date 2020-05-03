@@ -1,5 +1,5 @@
 __pycache__
 build
 poetry.lock
-.spec
+*.spec
 wtf.egg-info
